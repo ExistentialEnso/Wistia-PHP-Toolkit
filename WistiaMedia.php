@@ -17,6 +17,7 @@ class WistiaMedia {
 	protected $type;
 	protected $created;
 	protected $updated;
+	protected $hashed_id;
 	
 	protected $api; //WistiaAPI object
 
@@ -31,6 +32,9 @@ class WistiaMedia {
 		}
 	}
 	
+	/**
+	 * Gets the date/time that the Media was first created (i.e. uploaded to Wistia.)
+	 */
 	public function getCreated() {
 		return $this->created;
 	}
@@ -56,7 +60,14 @@ class WistiaMedia {
 	}
 	
 	/**
-	 * Gets the media's ID.
+	 * Gets the Media's hashed ID, used for iframe embeds and the JavaScript API.
+	 */
+	public function getHashedId() {
+		return $this->hashed_id;
+	}
+	
+	/**
+	 * Gets the media's ID, used for calls to the data API.
 	 */
 	public function getId() {
 		return $this->id;
@@ -76,6 +87,9 @@ class WistiaMedia {
 		return $this->type;
 	}
 	
+	/**
+	 * Gets the date/time that the media was last updated.
+	 */
 	public function getUpdated() {
 		return $this->updated;	
 	}

@@ -17,6 +17,7 @@ class WistiaProject {
 	protected $name;
 	protected $mediaCount;
 	protected $anonymousCanUpload;
+	protected $anonymousCanDownload;
 	
 	protected $medias = array();
 	
@@ -33,15 +34,31 @@ class WistiaProject {
 		}
 	}
 	
+	/**
+	 * Returns whether or not anonymous users can upload videos to this project. This must be true for the uploader to be used.
+	 * 
+	 * @return boolean Whether anonymous users can upload.
+	 */
 	public function anonymousCanUpload() {
 		return (boolean) $this->anonymousCanUpload;
 	}
 	
 	/**
+	 * Returns whether or not anonymous users can download videos from this project.
+	 * 
+	 * @return boolean Whether anonymous users can download.
+	 */
+	public function anonymousCanDownload() {
+		return (boolean) $this->anonymousCanDownload;
+	}
+	
+	/**
 	 * Gets the number of media files associated with this project.
+	 * 
+	 * @return integer The number of files.
 	 */
 	public function getMediaCount() {
-		return $this->mediaCount;
+		return (int) $this->mediaCount;
 	}
 	
 	/**
@@ -91,14 +108,25 @@ class WistiaProject {
 	
 	/**
 	* Saves changes to the project to Wistia's website.
+	* 
+	* WARNING: This currently only supports saving updates to existing projects. Use WistiaAPI->createProject() to create new projects.
 	*/
 	public function save() {
 		if($this->publicId != null) {
-			$params = array("anonymousCanUpload"=>((int)$this->anonymousCanUpload), "name"=>$this->name);
+			$params = array("anonymousCanUpload"=>((int)$this->anonymousCanUpload), "anonymousCanDownload"=>((int)$this->anonymousCanDownload), "name"=>$this->name);
 			$response = $this->api->call('projects/'.$this->publicId.'.json', "PUT", $params);
 			
 			return $response;
 		}
+	}
+	
+	/**
+	 * Set whether or not anonymous users can download medias from this project. Note that ->save() must be called for changes to take effect on Wistia's website.
+	 * 
+	 * @param boolean $anon
+	 */
+	public function setAnonymousCanDownload($anon) {
+		$this->anonymousCanDownload = (bool) $anon;
 	}
 	
 	/**
@@ -110,12 +138,17 @@ class WistiaProject {
 	}
 	
 	/**
-	* Sets the name of the project. Note that ->save() must be called for changes to take ffect on Wistia's website.
+	* Sets the name of the project. Note that ->save() must be called for changes to take effect on Wistia's website.
 	*/
 	public function setName($name) {
 		$this->name = $name;
 	}
 	
+	/**
+	 * Private function that processes stdClass data into a WistiaProject object.
+	 * 
+	 * @param stdClass $data
+	 */
 	private function _loadData($data) {
 		foreach($data as $key => $value) {
 			if($key == "medias") {
