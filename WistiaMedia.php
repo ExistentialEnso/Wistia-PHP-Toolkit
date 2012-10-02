@@ -12,6 +12,7 @@
 class WistiaMedia {
 	protected $id;
 	protected $name;
+	protected $description;
 	protected $duration;
 	protected $embedCode = "";
 	protected $type;
@@ -37,6 +38,13 @@ class WistiaMedia {
 	 */
 	public function getCreated() {
 		return $this->created;
+	}
+	
+	/**
+	 * Gets the description associated with the Media.
+	 */
+	public function getDescription() {
+		return $this->description;
 	}
 	
 	/**
@@ -94,6 +102,29 @@ class WistiaMedia {
 		return $this->updated;	
 	}
 	
+	/**
+	 * Changes the description of this Media.
+	 * 
+	 * @param string $description
+	 */
+	public function setDescription($description) {
+		$this->description = $description;
+	}
+	
+	/**
+	 * Changes the name of this Media. Is set to file name at upload by default.
+	 * 
+	 * @param string $name
+	 */
+	public function setName($name) {
+		$this->name = $name;
+	}
+	
+	/**
+	 * Private function that processes stdClass data into a WistiaProject object.
+	 * 
+	 * @param stdClass $data
+	 */
 	private function _loadData($data) {
 		foreach($data as $key => $value) {
 			if(property_exists("WistiaMedia", $key)) {
