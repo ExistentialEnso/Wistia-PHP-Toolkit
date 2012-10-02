@@ -26,21 +26,36 @@ class WistiaAPI {
 	}
 	
 	/**
+	 * Master, generic API call function that processes all calls to the API.
+	 * 
+	 * @param string $file Location of call. Is appended to Wistia base URL (https://api.wistia.com/v1/).
+	 * @param string $method HTTP method to use (e.g. GET, POST, PUT). Defaults to GET.
+	 * @param array $params Parameters to pass with the call. Array of key=>value pairs.
+	 */
+	public function call($file, $method="GET", $params=null) {
+		$curl = curl_init('https://api.wistia.com/v1/' . $file);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($curl, CURLOPT_USERPWD, 'api:' . $this->key);
+		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+		
+		if($method != "GET") curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+		if($params != null) curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($params));
+		
+		$response = curl_exec($curl);
+		
+		return json_decode($response);
+	}
+	
+	/**
 	* Creates a WistiaProject with a given name and saves it to your Wistia account.
 	*/
 	public function createProject($name) {
 		$params = array("name"=>$name);
-		$curl = curl_init('https://api.wistia.com/v1/projects.json');
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);                         
-		curl_setopt($curl, CURLOPT_USERPWD, 'api:' . $this->key);
-		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);                    
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);                          
-		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-		curl_setopt($curl, CURLOPT_POSTFIELDS,http_build_query($params));
-		$response = curl_exec($curl);
+		$response = $this->call("projects.json", "POST", $params);
 		
-		$project = new WistiaProject($this, json_decode($response));
+		$project = new WistiaProject($this, $response);
 		
 		return $project;
 	}
@@ -59,15 +74,9 @@ class WistiaAPI {
 	 * @return WistiaProject The requested project.
 	 */
 	public function getProject($publicid) {
-		$curl = curl_init('https://api.wistia.com/v1/projects/'.$publicid.'.json');
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);                         
-		curl_setopt($curl, CURLOPT_USERPWD, 'api:' . $this->key);
-		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);                    
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);                          
-		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-		$response = curl_exec($curl);
+		$response = $this->call("projects/".$publicid.".json");
 		
-		$project = new WistiaProject($this, json_decode($response));
+		$project = new WistiaProject($this, $response);
 		
 		return $project;
 	}
@@ -78,15 +87,7 @@ class WistiaAPI {
 	 * @return array Array of WistiaProject objects.
 	 */
 	public function getProjects() {
-		$curl = curl_init('https://api.wistia.com/v1/projects.json');
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($curl, CURLOPT_USERPWD, 'api:' . $this->key);
-		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-		$response = curl_exec($curl);
-		
-		$response = json_decode($response);
+		$response = $this->call("projects.json");
 		$projects = array();
 		
 		foreach($response as $obj) {
@@ -104,15 +105,9 @@ class WistiaAPI {
 	 * @return WistiaMedia The created object.
 	 */
 	public function getMedia($id) {
-		$curl = curl_init('https://api.wistia.com/v1/medias/'.$id.'.json');
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($curl, CURLOPT_USERPWD, 'api:' . $this->key);
-		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-		$response = curl_exec($curl);
+		$response = $this->call("medias/".$id.".json");
 		
-		$media = new WistiaMedia($this, json_decode($response));
+		$media = new WistiaMedia($this, $response);
 		
 		return $media;
 	}

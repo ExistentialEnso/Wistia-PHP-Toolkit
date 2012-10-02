@@ -29,19 +29,12 @@ class WistiaProject {
 		$this->api = $api;
 	
 		if($data != null) {
-			foreach($data as $key => $value) {
-				if($key == "medias") {
-					//"medias" field is itself an array of media file-related information
-					foreach($value as $o) {
-						$m = new WistiaMedia($api, $o);
-						
-						array_push($this->medias, $m);
-					}
-				} else if(property_exists("WistiaProject", $key)) {
-					$this->$key = $value;
-				}
-			}
+			$this->_loadData($data);
 		}
+	}
+	
+	public function anonymousCanUpload() {
+		return (boolean) $this->anonymousCanUpload;
 	}
 	
 	/**
@@ -49,6 +42,19 @@ class WistiaProject {
 	 */
 	public function getMediaCount() {
 		return $this->mediaCount;
+	}
+	
+	/**
+	 * Returns an array of WistiaMedia objects associated with the Project.
+	 */
+	public function getMedias() {
+		if(count($this->medias) != $this->mediaCount) { //happens if Project comes from WistiaAPI->getProjects();
+			$response = $this->api->call('projects/'.$this->publicId.'.json');
+			
+			$this->_loadData($response);
+		}
+		
+		return $this->medias;
 	}
 	
 	/**
@@ -84,29 +90,14 @@ class WistiaProject {
 	}
 	
 	/**
-	* Returns an array of WistiaMedia objects associated with the Project.
-	*/
-	public function getMedias() {
-		return $this->medias;
-	}
-	
-	/**
 	* Saves changes to the project to Wistia's website.
 	*/
 	public function save() {
 		if($this->publicId != null) {
 			$params = array("anonymousCanUpload"=>((int)$this->anonymousCanUpload), "name"=>$this->name);
-			$curl = curl_init('https://api.wistia.com/v1/projects/'.$this->publicId.'.json');
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);                         
-			curl_setopt($curl, CURLOPT_USERPWD, 'api:' . $this->api->getKey());
-			curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);                    
-			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);                          
-			curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-			curl_setopt($curl, CURLOPT_POSTFIELDS,http_build_query($params));
-			$response = curl_exec($curl);
+			$response = $this->api->call('projects/'.$this->publicId.'.json', "PUT", $params);
 			
-			return json_decode($response);
+			return $response;
 		}
 	}
 	
@@ -123,5 +114,20 @@ class WistiaProject {
 	*/
 	public function setName($name) {
 		$this->name = $name;
+	}
+	
+	private function _loadData($data) {
+		foreach($data as $key => $value) {
+			if($key == "medias") {
+				//"medias" field is itself an array of media file-related information
+				foreach($value as $o) {
+					$m = new WistiaMedia($this->api, $o);
+		
+					array_push($this->medias, $m);
+				}
+			} else if(property_exists("WistiaProject", $key)) {
+				$this->$key = $value;
+			}
+		}
 	}
 }

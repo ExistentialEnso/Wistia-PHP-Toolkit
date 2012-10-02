@@ -23,15 +23,11 @@ class WistiaMedia {
 	/**
 	* Constructor function. Optional second parameter lets you pre-populate the object with information.
 	*/
-	public function __construct($api, $obj=null) {
+	public function __construct($api, $data=null) {
 		$this->api = $api;
 	
-		if($obj!=null) {
-			foreach($obj as $key => $value) {
-				if(property_exists("WistiaMedia", $key)) {
-					$this->$key = $value;
-				}
-			}
+		if($data!=null) {
+			$this->_loadData($data);
 		}
 	}
 	
@@ -51,20 +47,9 @@ class WistiaMedia {
 	*/
 	public function getEmbedCode() {
 		// WistiaMedia objects loaded secondarily through loading a project won't have all data.
-		if($this->id != "" && $this->embedCode == "") {
-			$curl = curl_init('https://api.wistia.com/v1/medias/'.$this->id.'.json');
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);                         
-			curl_setopt($curl, CURLOPT_USERPWD, 'api:' . $this->api->getKey());
-			curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);                    
-			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);                          
-			curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-			$response = json_decode(curl_exec($curl));
-			
-			foreach($obj as $key => $value) {
-				if(property_exists("WistiaMedia", $key)) {
-					$this->$key = $value;
-				}
-			}
+		if($this->id != "" && $this->embedCode == "") {			
+			$response = $this->api->call("medias/".$this->id.".json");
+			$this->_loadData($response);
 		}
 		
 		return $this->embedCode;
@@ -93,5 +78,13 @@ class WistiaMedia {
 	
 	public function getUpdated() {
 		return $this->updated;	
+	}
+	
+	private function _loadData($data) {
+		foreach($data as $key => $value) {
+			if(property_exists("WistiaMedia", $key)) {
+				$this->$key = $value;
+			}
+		}
 	}
 }
