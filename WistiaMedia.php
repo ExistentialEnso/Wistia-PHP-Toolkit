@@ -13,6 +13,7 @@ class WistiaMedia {
 	protected $id;
 	protected $name;
 	protected $duration;
+	protected $embedCode;
 	
 	protected $api; //WistiaAPI object
 
@@ -42,15 +43,20 @@ class WistiaMedia {
 	* Gets the code to embed the media on a page.
 	*/
 	public function getEmbedCode() {
-		$curl = curl_init('https://api.wistia.com/v1/medias/'.$this->id.'.json');
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);                         
-		curl_setopt($curl, CURLOPT_USERPWD, 'api:' . $this->api->getKey());
-		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);                    
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);                          
-		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-		$response = json_decode(curl_exec($curl));
+		// WistiaMedia objects loaded secondarily through loading a project won't have all data.
+		if($this->id != "" && $this->embedCode == null) {
+			$curl = curl_init('https://api.wistia.com/v1/medias/'.$this->id.'.json');
+			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);                         
+			curl_setopt($curl, CURLOPT_USERPWD, 'api:' . $this->api->getKey());
+			curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);                    
+			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);                          
+			curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+			$response = json_decode(curl_exec($curl));
+			
+			$this->embedCode = $response->embedCode;
+		}
 		
-		print_r($response->embedCode);
+		return $this->embedCode;
 	}
 	
 	/**
