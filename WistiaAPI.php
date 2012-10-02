@@ -2,7 +2,7 @@
 /**
 * Wistia PHP Class Library - API Class
 *
-* @author Thorne N. Melcher <existentialenso@gmail.com>
+* @author Thorne N. Melcher <tmelcher@portdusk.com>
 * @copyright Copyright 2012, Thorne N. Melcher
 * @license LGPL v3 (see LICENSE.txt)
 *

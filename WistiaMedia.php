@@ -2,7 +2,7 @@
 /**
 * Wistia PHP Class Library - API Class
 *
-* @author Thorne N. Melcher <existentialenso@gmail.com>
+* @author Thorne N. Melcher <tmelcher@portdusk.com>
 * @copyright Copyright 2012, Thorne N. Melcher
 * @license LGPL v3 (see LICENSE.txt)
 *
@@ -13,7 +13,10 @@ class WistiaMedia {
 	protected $id;
 	protected $name;
 	protected $duration;
-	protected $embedCode;
+	protected $embedCode = "";
+	protected $type;
+	protected $created;
+	protected $updated;
 	
 	protected $api; //WistiaAPI object
 
@@ -32,6 +35,10 @@ class WistiaMedia {
 		}
 	}
 	
+	public function getCreated() {
+		return $this->created;
+	}
+	
 	/**
 	* Returns the duration of the media (in seconds).
 	*/
@@ -44,7 +51,7 @@ class WistiaMedia {
 	*/
 	public function getEmbedCode() {
 		// WistiaMedia objects loaded secondarily through loading a project won't have all data.
-		if($this->id != "" && $this->embedCode == null) {
+		if($this->id != "" && $this->embedCode == "") {
 			$curl = curl_init('https://api.wistia.com/v1/medias/'.$this->id.'.json');
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);                         
 			curl_setopt($curl, CURLOPT_USERPWD, 'api:' . $this->api->getKey());
@@ -53,7 +60,11 @@ class WistiaMedia {
 			curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 			$response = json_decode(curl_exec($curl));
 			
-			$this->embedCode = $response->embedCode;
+			foreach($obj as $key => $value) {
+				if(property_exists("WistiaMedia", $key)) {
+					$this->$key = $value;
+				}
+			}
 		}
 		
 		return $this->embedCode;
@@ -71,5 +82,16 @@ class WistiaMedia {
 	 */
 	public function getName() {
 		return $this->name;	
+	}
+	
+	/**
+	 * Gets the media's type ("Video", "Image", "Audio", "Swf", "MicrosoftOfficeDocument", "PdfDocument", or "UnknownType").
+	 */
+	public function getType() {
+		return $this->type;
+	}
+	
+	public function getUpdated() {
+		return $this->updated;	
 	}
 }

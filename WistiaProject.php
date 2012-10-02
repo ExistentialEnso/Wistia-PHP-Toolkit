@@ -2,7 +2,7 @@
 /**
 * Wistia PHP Class Library - API Class
 *
-* @author Thorne N. Melcher <existentialenso@gmail.com>
+* @author Thorne N. Melcher <tmelcher@portdusk.com>
 * @copyright Copyright 2012, Thorne N. Melcher
 * @license LGPL v3 (see LICENSE.txt)
 *
@@ -83,14 +83,14 @@ class WistiaProject {
 		return $code;
 	}
 	
-	/*
+	/**
 	* Returns an array of WistiaMedia objects associated with the Project.
 	*/
 	public function getMedias() {
 		return $this->medias;
 	}
 	
-	/*
+	/**
 	* Saves changes to the project to Wistia's website.
 	*/
 	public function save() {
