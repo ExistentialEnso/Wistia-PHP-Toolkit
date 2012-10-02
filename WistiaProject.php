@@ -5,8 +5,8 @@
 * @author Thorne N. Melcher <existentialenso@gmail.com>
 * @copyright Copyright 2012, Thorne N. Melcher
 *
-* Class to represent Wistia Projects, the primary way an account's videos are usually organized. Every video must belong to a project, though, at this
-* time, there isn't a way to upload videos directly through the API. However, ->getUploaderCode() can be used to produce embeddable HTML/JavaScript that
+* Class to represent Wistia Projects, the primary way an account's medias are usually organized. Every media must belong to a project, though, at this
+* time, there isn't a way to upload medias directly through the API. However, ->getUploaderCode() can be used to produce embeddable HTML/JavaScript that
 * can be used to add an upload button to your site. However, $anonymousCanUpload must be true for this to work (since this doesn't use any sort of
 * authentication.
 */
@@ -17,7 +17,7 @@ class WistiaProject {
 	protected $mediaCount;
 	protected $anonymousCanUpload;
 	
-	protected $videos = array();
+	protected $medias = array();
 	
 	protected $api; //WistiaAPI object
 	
@@ -30,11 +30,11 @@ class WistiaProject {
 		if($data != null) {
 			foreach($data as $key => $value) {
 				if($key == "medias") {
-					//"medias" field is itself an array of video file-related information
+					//"medias" field is itself an array of media file-related information
 					foreach($value as $v) {
-						$video = new WistiaVideo($api, $v);
+						$media = new WistiaMedia($api, $v);
 						
-						array_push($this->videos, $video);
+						array_push($this->medias, $media);
 					}
 				}
 			
@@ -85,10 +85,10 @@ class WistiaProject {
 	}
 	
 	/*
-	* Returns an array of WistiaVideo objects associated with the Project.
+	* Returns an array of WistiaMedia objects associated with the Project.
 	*/
-	public function getVideos() {
-		return $this->videos;
+	public function getMedias() {
+		return $this->medias;
 	}
 	
 	/*
@@ -112,7 +112,7 @@ class WistiaProject {
 	}
 	
 	/**
-	* Set whether or not anonymous users can upload videos to this project. This must be enabled for the embeddable uploader to work. Note that ->save()
+	* Set whether or not anonymous users can upload medias to this project. This must be enabled for the embeddable uploader to work. Note that ->save()
 	* must be called for changes to take effect on Wistia's website.
 	*/
 	public function setAnonymousCanUpload($anon) {

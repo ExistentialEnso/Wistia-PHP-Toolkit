@@ -6,11 +6,11 @@
 * @copyright Copyright 2012, Thorne N. Melcher
 *
 * Class to represent a connection to Wistia's API. Must pass an API key when constructed. Some functions return objects of
-* other types in this library (such as WistiaProject objects or WistiaVideo objects).
+* other types in this library (such as WistiaProject objects or WistiaMedia objects).
 */
 
 include "WistiaProject.php";
-include "WistiaVideo.php";
+include "WistiaMedia.php";
 
 class WistiaAPI {
 	private $key;
@@ -84,5 +84,19 @@ class WistiaAPI {
 		}
 		
 		return $projects;
+	}
+	
+	public function getMedia() {
+		$curl = curl_init('https://api.wistia.com/v1/media/'.$publicid.'.json');
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($curl, CURLOPT_USERPWD, 'api:' . $this->key);
+		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+		$response = curl_exec($curl);
+		
+		$media = new WistiaMedia($this, json_decode($response));
+		
+		return $media;
 	}
 }

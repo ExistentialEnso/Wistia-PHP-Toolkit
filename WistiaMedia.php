@@ -5,10 +5,10 @@
 * @author Thorne N. Melcher <existentialenso@gmail.com>
 * @copyright Copyright 2012, Thorne N. Melcher
 *
-* Class to represent videos hosted on Wistia. Videos cannot be created using the API and must be made through WistiaProject's getUploaderCode() function, 
-* which allows you to embed an uploader for that project (and all videos "belong" to a project).
+* Class to represent medias hosted on Wistia. Medias cannot be created using the API and must be made through WistiaProject's getUploaderCode() function, 
+* which allows you to embed an uploader for that project (and all medias "belong" to a project).
 */
-class WistiaVideo {
+class WistiaMedia {
 	protected $id;
 	protected $name;
 	protected $duration;
@@ -23,7 +23,7 @@ class WistiaVideo {
 	
 		if($obj!=null) {
 			foreach($obj as $key => $value) {
-				if(property_exists("WistiaVideo", $key)) {
+				if(property_exists("WistiaMedia", $key)) {
 					$this->$key = $value;
 				}
 			}
@@ -31,14 +31,14 @@ class WistiaVideo {
 	}
 	
 	/**
-	* Returns the duration of the video (in seconds).
+	* Returns the duration of the media (in seconds).
 	*/
 	public function getDuration() {
 		return $this->duration;
 	}
 	
 	/**
-	* Gets the code to embed the video on a page.
+	* Gets the code to embed the media on a page.
 	*/
 	public function getEmbedCode() {
 		$curl = curl_init('https://api.wistia.com/v1/medias/'.$this->id.'.json');
@@ -50,5 +50,13 @@ class WistiaVideo {
 		$response = json_decode(curl_exec($curl));
 		
 		print_r($response->embedCode);
+	}
+	
+	public function getId() {
+		return $this->id;
+	}
+	
+	public function getName() {
+		return $this->name;	
 	}
 }
