@@ -44,6 +44,27 @@ class WistiaProject {
 			}
 		}
 	}
+	
+	/**
+	 * Gets the number of media files associated with this project.
+	 */
+	public function getMediaCount() {
+		return $this->mediaCount;
+	}
+	
+	/**
+	 * Gets the name associated with this project.
+	 */
+	public function getName() {
+		return $this->name;
+	}
+	
+	/**
+	 * Gets the public id (the primary unique identifier in the API) of the project.
+	 */
+	public function getPublicId() {
+		return $this->publicId;
+	}
 
 	/**
 	* Generates and returns code for an upload button for the project. Displays an error message if 'anonymousCanUpload' is set to false.
