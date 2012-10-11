@@ -25,6 +25,9 @@ class WistiaProject {
 	
 	/**
 	* Can pass a stdObject or array of data, and it will traverse it attempting to parse it into Wistia objects.
+	*
+	* @param WistiaAPI $api
+	* @param stdClass $data
 	*/
 	public function __construct($api, $data=null) {
 		$this->api = $api;
@@ -63,6 +66,8 @@ class WistiaProject {
 	
 	/**
 	 * Returns an array of WistiaMedia objects associated with the Project.
+	 *
+	 * @return array The objects.
 	 */
 	public function getMedias() {
 		if(count($this->medias) != $this->mediaCount) { //happens if Project comes from WistiaAPI->getProjects();
@@ -76,6 +81,8 @@ class WistiaProject {
 	
 	/**
 	 * Gets the name associated with this project.
+	 *
+	 * @return string The name.
 	 */
 	public function getName() {
 		return $this->name;
@@ -83,13 +90,17 @@ class WistiaProject {
 	
 	/**
 	 * Gets the public id (the primary unique identifier in the API) of the project.
+	 *
+	 * @return string The public id.
 	 */
 	public function getPublicId() {
 		return $this->publicId;
 	}
 
 	/**
-	* Generates and returns code for an upload button for the project. Displays an error message if 'anonymousCanUpload' is set to false.
+	* Generates and returns HTML code for an upload button for the project. Displays an error message if 'anonymousCanUpload' is set to false.
+	*
+	* @return string The HTML code.
 	*/
 	public function getUploaderCode() {
 		ob_start();
@@ -107,9 +118,10 @@ class WistiaProject {
 	}
 	
 	/**
-	* Saves changes to the project to Wistia's website.
-	* 
-	* WARNING: This currently only supports saving updates to existing projects. Use WistiaAPI->createProject() to create new projects.
+	* Saves changes to the project to Wistia's website. WARNING: This currently only supports saving updates 
+	* to existing projects. Use WistiaAPI->createProject() to create new projects.
+	*
+	* @return stdClass The API response.
 	*/
 	public function save() {
 		if($this->publicId != null) {
@@ -132,6 +144,8 @@ class WistiaProject {
 	/**
 	* Set whether or not anonymous users can upload medias to this project. This must be enabled for the embeddable uploader to work. Note that ->save()
 	* must be called for changes to take effect on Wistia's website.
+	*
+	* @param boolean $anon
 	*/
 	public function setAnonymousCanUpload($anon) {
 		$this->anonymousCanUpload = (bool) $anon;
@@ -139,6 +153,8 @@ class WistiaProject {
 	
 	/**
 	* Sets the name of the project. Note that ->save() must be called for changes to take effect on Wistia's website.
+	*
+	* @param string $name
 	*/
 	public function setName($name) {
 		$this->name = $name;

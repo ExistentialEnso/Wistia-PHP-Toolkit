@@ -35,6 +35,8 @@ class WistiaMedia {
 	
 	/**
 	 * Gets the date/time that the Media was first created (i.e. uploaded to Wistia.)
+	 *
+	 * @return string When it was created.
 	 */
 	public function getCreated() {
 		return $this->created;
@@ -42,6 +44,8 @@ class WistiaMedia {
 	
 	/**
 	 * Gets the description associated with the Media.
+	 *
+	 * @return string The description.
 	 */
 	public function getDescription() {
 		return $this->description;
@@ -49,13 +53,17 @@ class WistiaMedia {
 	
 	/**
 	* Returns the duration of the media (in seconds).
+	*
+	* @return int The duration.
 	*/
 	public function getDuration() {
 		return $this->duration;
 	}
 	
 	/**
-	* Gets the code to embed the media on a page.
+	* Gets the HTML code to embed the media on a page.
+	*
+	* @return string The HTML.
 	*/
 	public function getEmbedCode() {
 		// WistiaMedia objects loaded secondarily through loading a project won't have all data.
@@ -69,6 +77,8 @@ class WistiaMedia {
 	
 	/**
 	 * Gets the Media's hashed ID, used for iframe embeds and the JavaScript API.
+	 *
+	 * @return string The hashed ID.
 	 */
 	public function getHashedId() {
 		return $this->hashed_id;
@@ -76,6 +86,8 @@ class WistiaMedia {
 	
 	/**
 	 * Gets the media's ID, used for calls to the data API.
+	 *
+	 * @return int The ID.
 	 */
 	public function getId() {
 		return $this->id;
@@ -83,6 +95,8 @@ class WistiaMedia {
 	
 	/**
 	 * Gets the media's name (default: filename at upload).
+	 *
+	 * @return string The name.
 	 */
 	public function getName() {
 		return $this->name;	
@@ -90,6 +104,8 @@ class WistiaMedia {
 	
 	/**
 	 * Gets the media's type ("Video", "Image", "Audio", "Swf", "MicrosoftOfficeDocument", "PdfDocument", or "UnknownType").
+	 *
+	 * @return string The type.
 	 */
 	public function getType() {
 		return $this->type;
@@ -97,6 +113,8 @@ class WistiaMedia {
 	
 	/**
 	 * Gets the date/time that the media was last updated.
+	 *
+	 * @return string The update time.
 	 */
 	public function getUpdated() {
 		return $this->updated;	

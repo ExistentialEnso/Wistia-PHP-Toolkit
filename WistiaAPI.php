@@ -50,6 +50,9 @@ class WistiaAPI {
 	
 	/**
 	* Creates a WistiaProject with a given name and saves it to your Wistia account.
+	*
+	* @param string $name The project's name.
+	* @return WistiaProject The newly created project.
 	*/
 	public function createProject($name) {
 		$params = array("name"=>$name);
@@ -62,6 +65,8 @@ class WistiaAPI {
 	
 	/**
 	* Returns the API key associated with this instance.
+	*
+	* @return string The API key.
 	*/
 	public function getKey() {
 		return $this->key;
@@ -99,7 +104,7 @@ class WistiaAPI {
 	}
 	
 	/**
-	 * Gets a WistiaMedia object created from API data.
+	 * Gets a WistiaMedia object created from API data based on an ID value.
 	 * 
 	 * @param string $id The ID of the media.
 	 * @return WistiaMedia The created object.
