@@ -185,7 +185,7 @@ class WistiaAccount {
 	 */
 	private function _loadData($data) {
 		foreach($data as $key => $value) {
-			if(property_exists("WistiaAPI", $key)) {
+			if(property_exists("WistiaAccount", $key)) {
 				$this->$key = $value;
 			}
 		}
