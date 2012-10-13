@@ -2,31 +2,99 @@
 /**
 * Wistia PHP Class Library - API Class
 *
+* Class to represent medias hosted on Wistia. Medias cannot be created using the API and must be made through WistiaProject's getUploaderCode() function, 
+* which allows you to embed an uploader for that project (and all medias "belong" to a project).
+* 
 * @author Thorne N. Melcher <tmelcher@portdusk.com>
 * @copyright Copyright 2012, Thorne N. Melcher
 * @license LGPL v3 (see LICENSE.txt)
-*
-* Class to represent medias hosted on Wistia. Medias cannot be created using the API and must be made through WistiaProject's getUploaderCode() function, 
-* which allows you to embed an uploader for that project (and all medias "belong" to a project).
+* @package Wistia-API-Toolkit
 */
+
+/**
+ * WistiaMedia class definition.
+ *
+ * @package Wistia
+ */
 class WistiaMedia {
+	/**
+	 * The unique ID of this media.
+	 * 
+	 * @var integer
+	 */
 	protected $id;
+	
+	/**
+	 * The display name of this media. Defaults to the file name at upload.
+	 * 
+	 * @var string
+	 */
 	protected $name;
+	
+	/**
+	 * A description of this media.
+	 * 
+	 * @var string
+	 */
 	protected $description;
+	
+	/**
+	 * The duration of this media (in seconds or pages)
+	 * 
+	 * @var integer
+	 */
 	protected $duration;
+	
+	/**
+	 * The embed code for this media.
+	 * 
+	 * @var string
+	 */
 	protected $embedCode = "";
+	
+	/**
+	 * This media's type.
+	 * 
+	 * @var string
+	 */
 	protected $type;
+	
+	/**
+	 * When this media was created.
+	 * 
+	 * @var string
+	 */
 	protected $created;
+	
+	/**
+	 * When this media was last updated.
+	 * 
+	 * @var string
+	 */
 	protected $updated;
+	
+	/**
+	 * This media's hashed ID value, used for iframes and the JS api.
+	 * 
+	 * @var string
+	 */
 	protected $hashed_id;
 	
-	protected $api; //WistiaAPI object
+	/**
+	 * The WistiaAccount object used to communicate with the API.
+	 * 
+	 * @var WistiaAccount
+	 */
+	protected $account;
 
 	/**
 	* Constructor function. Optional second parameter lets you pre-populate the object with information.
+	* 
+	* @param WistiaAccount $account
+	* @param stdClass $data
 	*/
-	public function __construct($api, $data=null) {
-		$this->api = $api;
+	public function __construct($account, $data=null) {
+		$this->api = $account;
 	
 		if($data!=null) {
 			$this->_loadData($data);

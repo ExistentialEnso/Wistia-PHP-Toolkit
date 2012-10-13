@@ -1,20 +1,52 @@
 <?php
 /**
-* Wistia PHP Class Library - API Class
+* Wistia PHP Class Library - Account Class
 *
+* Class to represent a connection to Wistia's API for a particular account. Must pass an API key when constructed. 
+* Some functions return objects of other types in this library (such as WistiaProject objects or WistiaMedia objects).
+* 
 * @author Thorne N. Melcher <tmelcher@portdusk.com>
 * @copyright Copyright 2012, Thorne N. Melcher
 * @license LGPL v3 (see LICENSE.txt)
-*
-* Class to represent a connection to Wistia's API. Must pass an API key when constructed. Some functions return objects of
-* other types in this library (such as WistiaProject objects or WistiaMedia objects).
+* @package Wistia-API-Toolkit
 */
 
 include "WistiaMedia.php";
 include "WistiaProject.php";
 
-class WistiaAPI {
+/**
+ * WistiaAccount class definition.
+ *
+ * @package Wistia
+ */
+class WistiaAccount {
+	/**
+	 * The API key used for authenticating to the API
+	 * 
+	 * @var string
+	 */
 	private $key;
+	
+	/**
+	 * The numeric ID of this Wistia account.
+	 * 
+	 * @var integer
+	 */
+	private $id;
+	
+	/**
+	 * The name of this account.
+	 * 
+	 * @var string
+	 */
+	private $name;
+	
+	/**
+	 * This account's main Wistia URL
+	 * 
+	 * @var string
+	 */
+	private $url;
 	
 	/**
 	 * Constructor function. Username assumed to be "api" as is standard for all accounts.
@@ -23,6 +55,9 @@ class WistiaAPI {
 	 */
 	public function __construct($key) {
 		$this->key = $key;
+		
+		$response = call("account.json");
+		$this->_loadData($response);
 	}
 	
 	/**
@@ -31,6 +66,7 @@ class WistiaAPI {
 	 * @param string $file Location of call. Is appended to Wistia base URL (https://api.wistia.com/v1/).
 	 * @param string $method HTTP method to use (e.g. GET, POST, PUT). Defaults to GET.
 	 * @param array $params Parameters to pass with the call. Array of key=>value pairs.
+	 * @return stdClass The information returned by the API call.
 	 */
 	public function call($file, $method="GET", $params=null) {
 		$curl = curl_init('https://api.wistia.com/v1/' . $file);
@@ -64,12 +100,30 @@ class WistiaAPI {
 	}
 	
 	/**
+	 * Gets the numeric ID of this account.
+	 * 
+	 * @return integer The ID.
+	 */
+	public function getId() {
+		return $this->id;
+	}
+	
+	/**
 	* Returns the API key associated with this instance.
 	*
 	* @return string The API key.
 	*/
 	public function getKey() {
 		return $this->key;
+	}
+	
+	/**
+	 * Gets the name of this account.
+	 * 
+	 * @return string The name.
+	 */
+	public function getName() {
+		return $this->name;
 	}
 	
 	/**
@@ -115,5 +169,25 @@ class WistiaAPI {
 		$media = new WistiaMedia($this, $response);
 		
 		return $media;
+	}
+	
+	/**
+	 * Gets the main account URL associated with this account.
+	 */
+	public function getURL() {
+		return $this->url;	
+	}
+	
+	/**
+	 * Private function that processes stdClass data into a this object.
+	 *
+	 * @param stdClass $data
+	 */
+	private function _loadData($data) {
+		foreach($data as $key => $value) {
+			if(property_exists("WistiaAPI", $key)) {
+				$this->$key = $value;
+			}
+		}
 	}
 }

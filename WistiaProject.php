@@ -2,35 +2,87 @@
 /**
 * Wistia PHP Class Library - API Class
 *
-* @author Thorne N. Melcher <tmelcher@portdusk.com>
-* @copyright Copyright 2012, Thorne N. Melcher
-* @license LGPL v3 (see LICENSE.txt)
-*
 * Class to represent Wistia Projects, the primary way an account's medias are usually organized. Every media must belong to a project, though, at this
 * time, there isn't a way to upload medias directly through the API. However, ->getUploaderCode() can be used to produce embeddable HTML/JavaScript that
 * can be used to add an upload button to your site. However, $anonymousCanUpload must be true for this to work (since this doesn't use any sort of
 * authentication.
+* 
+* @author Thorne N. Melcher <tmelcher@portdusk.com>
+* @copyright Copyright 2012, Thorne N. Melcher
+* @license LGPL v3 (see LICENSE.txt)
+* @package Wistia-API-Toolkit
 */
 
+/**
+ * WistiaProject class definition.
+ *
+ * @package Wistia
+ */
 class WistiaProject {
+	/**
+	 * The public ID of this project -- its primary unique identifier.
+	 * 
+	 * @var string
+	 */
 	protected $publicId = null;
+	
+	/**
+	 * The name of this project.
+	 * 
+	 * @var string
+	 */
 	protected $name;
+	
+	/**
+	 * The number of media files in this project.
+	 * 
+	 * @var integer
+	 */
 	protected $mediaCount;
+	
+	/**
+	 * Whether anonymous users can upload to this project.
+	 * 
+	 * @var boolean
+	 */
 	protected $anonymousCanUpload;
+	
+	/**
+	 * Whether anonymous users can download from this project.
+	 * 
+	 * @var boolean
+	 */
 	protected $anonymousCanDownload;
 	
+	/**
+	 * Whether anonymous users can view this project.
+	 * 
+	 * @var boolean
+	 */
+	protected $public;
+	
+	/**
+	 * WistiaMedia objects owned by this project.
+	 * 
+	 * @var array
+	 */
 	protected $medias = array();
 	
-	protected $api; //WistiaAPI object
+	/**
+	 * The API object used for communicating with the Wistia API.
+	 * 
+	 * @var WistiaAccount
+	 */
+	protected $account;
 	
 	/**
 	* Can pass a stdObject or array of data, and it will traverse it attempting to parse it into Wistia objects.
 	*
-	* @param WistiaAPI $api
+	* @param WistiaAccount $account
 	* @param stdClass $data
 	*/
-	public function __construct($api, $data=null) {
-		$this->api = $api;
+	public function __construct($account, $data=null) {
+		$this->api = $account;
 	
 		if($data != null) {
 			$this->_loadData($data);
@@ -70,7 +122,7 @@ class WistiaProject {
 	 * @return array The objects.
 	 */
 	public function getMedias() {
-		if(count($this->medias) != $this->mediaCount) { //happens if Project comes from WistiaAPI->getProjects();
+		if(count($this->medias) != $this->mediaCount) { //happens if Project comes from WistiaAccount->getProjects();
 			$response = $this->api->call('projects/'.$this->publicId.'.json');
 			
 			$this->_loadData($response);
@@ -118,14 +170,23 @@ class WistiaProject {
 	}
 	
 	/**
+	 * Gets whether anonymous users can view this project.
+	 * 
+	 * @return boolean Whether they can.
+	 */
+	public function isPublic() {
+		return $this->public;
+	}
+	
+	/**
 	* Saves changes to the project to Wistia's website. WARNING: This currently only supports saving updates 
-	* to existing projects. Use WistiaAPI->createProject() to create new projects.
+	* to existing projects. Use WistiaAccount->createProject() to create new projects.
 	*
 	* @return stdClass The API response.
 	*/
 	public function save() {
 		if($this->publicId != null) {
-			$params = array("anonymousCanUpload"=>((int)$this->anonymousCanUpload), "anonymousCanDownload"=>((int)$this->anonymousCanDownload), "name"=>$this->name);
+			$params = array("public"=>((int)$this->public), "anonymousCanUpload"=>((int)$this->anonymousCanUpload), "anonymousCanDownload"=>((int)$this->anonymousCanDownload), "name"=>$this->name);
 			$response = $this->api->call('projects/'.$this->publicId.'.json', "PUT", $params);
 			
 			return $response;
@@ -158,6 +219,15 @@ class WistiaProject {
 	*/
 	public function setName($name) {
 		$this->name = $name;
+	}
+	
+	/**
+	 * Sets whether this project is viewable by anonymous users.
+	 * 
+	 * @param boolean $public
+	 */
+	public function setPublic($public) {
+		$this->public = $public;
 	}
 	
 	/**
