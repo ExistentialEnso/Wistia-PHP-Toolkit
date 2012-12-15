@@ -16,8 +16,8 @@ namespace wistia;
 class APIEntity {
   public function __construct($data=null) {
     if($data != null) {
-			$this->_loadData($data);
-		}
+      $this->_loadData($data);
+    }
   }
 
   /**
@@ -25,10 +25,10 @@ class APIEntity {
   * can then process that into fields on the "real" version of the entitys' class.
   */
   protected function _loadData($data) {
-		foreach($data as $key => $value) {
-			if(property_exists(get_class($this), $key)) {
-				$this->$key = $value;
-			}
-		}
-	}
+    foreach($data as $key => $value) {
+      if(property_exists(get_class($this), $key)) {
+        $this->$key = $value;
+      }
+    }
+  }
 }
