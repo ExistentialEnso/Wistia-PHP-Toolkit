@@ -9,59 +9,63 @@
 * @copyright Copyright 2012, Thorne N. Melcher
 * @license LGPL v3 (see LICENSE.txt)
 * @package Wistia-API-Toolkit
+* @version 2.0-b1
 */
 
-include "WistiaMedia.php";
-include "WistiaProject.php";
+namespace wistia;
 
 /**
- * WistiaAccount class definition.
+ * Account class definition.
  *
  * @package Wistia
  */
-class WistiaAccount {
+class Account extends APIEntity {
 	/**
 	 * The API key used for authenticating to the API
 	 * 
 	 * @var string
 	 */
-	private $key;
+	protected $key;
 	
 	/**
 	 * The numeric ID of this Wistia account.
 	 * 
 	 * @var integer
 	 */
-	private $id;
+	protected $id;
 	
 	/**
 	 * The name of this account.
 	 * 
 	 * @var string
 	 */
-	private $name;
+	protected $name;
 	
 	/**
 	 * This account's main Wistia URL
 	 * 
 	 * @var string
 	 */
-	private $url;
+	protected $url;
 	
 	/**
 	 * Constructor function. Username assumed to be "api" as is standard for all accounts.
 	 * 
 	 * @param string $key Your API key/password.
+   * @param stdObj $data Data to populate fields with.
 	 */
-	public function __construct($key) {
-		$this->key = $key;
+	public function __construct($key, $data = null) {
+		parent::__construct($data);
+    
+    $this->key = $key;
 		
-		$response = call("account.json");
-		$this->_loadData($response);
+    if($data == null) {
+      $this->_loadFields();
+    }
 	}
 	
 	/**
-	 * Master, generic API call function that processes all calls to the API.
+	 * Master, generic API call function that processes all calls to the API using cURL.
 	 * 
 	 * @param string $file Location of call. Is appended to Wistia base URL (https://api.wistia.com/v1/).
 	 * @param string $method HTTP method to use (e.g. GET, POST, PUT). Defaults to GET.
@@ -69,15 +73,26 @@ class WistiaAccount {
 	 * @return stdClass The information returned by the API call.
 	 */
 	public function call($file, $method="GET", $params=null) {
-		$curl = curl_init('https://api.wistia.com/v1/' . $file);
+    $url = 'https://api.wistia.com/v1/' . $file;
+  
+		$curl = curl_init($url);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curl, CURLOPT_USERPWD, 'api:' . $this->key);
 		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 		
+    // If not a GET request, set the CUSTOMREQUEST cURL field
 		if($method != "GET") curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-		if($params != null) curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($params));
+    
+    // Add params (if necessary)
+		if($params != null) {
+      // POST requests go in the POSTFIELDS field, otherwise just add a query string to our URL.
+      if($method == "POST") curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($params));
+      else $url . "?" . http_build_query($params);
+    }
+    
+    curl_setopt($curl, CURLOPT_URL, $url);
 		
 		$response = curl_exec($curl);
 		
@@ -94,7 +109,7 @@ class WistiaAccount {
 		$params = array("name"=>$name);
 		$response = $this->call("projects.json", "POST", $params);
 		
-		$project = new WistiaProject($this, $response);
+		$project = new Project($this, $response);
 		
 		return $project;
 	}
@@ -135,7 +150,7 @@ class WistiaAccount {
 	public function getProject($publicid) {
 		$response = $this->call("projects/".$publicid.".json");
 		
-		$project = new WistiaProject($this, $response);
+		$project = new Project($this, $response);
 		
 		return $project;
 	}
@@ -145,12 +160,17 @@ class WistiaAccount {
 	 * 
 	 * @return array Array of WistiaProject objects.
 	 */
-	public function getProjects() {
+	public function getProjects($recursive=false) {
 		$response = $this->call("projects.json");
 		$projects = array();
 		
+    // Turn each block of data into a Project item for our array
 		foreach($response as $obj) {
-			$p = new WistiaProject($this, $obj);
+			$p = new Project($this, $obj);
+      
+      // This will force the lazy loading of the media to kick in, querying the API for data
+      if($recursive) $p->getMedias();
+      
 			array_push($projects, $p);
 		}
 		
@@ -166,10 +186,30 @@ class WistiaAccount {
 	public function getMedia($id) {
 		$response = $this->call("medias/".$id.".json");
 		
-		$media = new WistiaMedia($this, $response);
+		$media = new Media($this, $response);
 		
 		return $media;
 	}
+  
+  public function getStats() {
+    $response = $this->call("stats/account.json");
+    
+    $stats = new Stats($response);
+    
+    return $stats;
+  }
+  
+  public function getDailyStats($date) {
+    if($date != intval($date)) strtotime($date); //convert to timestamp if necessary
+    $date = date("Y-m-d", $date); //create a properly-formatted date for the API call
+  
+    $response = $this->call("stats/account/by_date.json", "GET", array("start_date"=>$date, "end_date"=>$date));
+    //$response = $this->call("stats/account/by_date.json?start_date=" . $date . "&end_date=" . $date);
+    
+    $stats = new DailyStats($response[0]);
+    
+    return $stats;
+  }
 	
 	/**
 	 * Gets the main account URL associated with this account.
@@ -177,17 +217,9 @@ class WistiaAccount {
 	public function getURL() {
 		return $this->url;	
 	}
-	
-	/**
-	 * Private function that processes stdClass data into a this object.
-	 *
-	 * @param stdClass $data
-	 */
-	private function _loadData($data) {
-		foreach($data as $key => $value) {
-			if(property_exists("WistiaAccount", $key)) {
-				$this->$key = $value;
-			}
-		}
-	}
+  
+  public function _loadFields() {
+    $response = $this->call("account.json");
+		$this->_loadData($response);
+  }
 }

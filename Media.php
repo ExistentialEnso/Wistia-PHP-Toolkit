@@ -9,14 +9,17 @@
 * @copyright Copyright 2012, Thorne N. Melcher
 * @license LGPL v3 (see LICENSE.txt)
 * @package Wistia-API-Toolkit
+* @version 2.0-b1
 */
 
+namespace wistia;
+
 /**
- * WistiaMedia class definition.
+ * Media class definition.
  *
  * @package Wistia
  */
-class WistiaMedia {
+class Media extends APIEntity {
 	/**
 	 * The unique ID of this media.
 	 * 
@@ -94,12 +97,17 @@ class WistiaMedia {
 	* @param stdClass $data
 	*/
 	public function __construct($account, $data=null) {
-		$this->api = $account;
+		$this->account = $account;
 	
-		if($data!=null) {
-			$this->_loadData($data);
-		}
+		parent::__construct($data);
 	}
+  
+  /**
+  * Deletes the media from Wistia. Use with caution!
+  */
+  public function delete() {
+    return $this->account->call("medias/".$this->hashed_id.".json", "DELETE");
+  }
 	
 	/**
 	 * Gets the date/time that the Media was first created (i.e. uploaded to Wistia.)
@@ -134,7 +142,7 @@ class WistiaMedia {
 	* @return string The HTML.
 	*/
 	public function getEmbedCode() {
-		// WistiaMedia objects loaded secondarily through loading a project won't have all data.
+		// Media objects loaded secondarily through loading a project won't have all data.
 		if($this->id != "" && $this->embedCode == "") {			
 			$response = $this->api->call("medias/".$this->id.".json");
 			$this->_loadData($response);
@@ -205,17 +213,12 @@ class WistiaMedia {
 	public function setName($name) {
 		$this->name = $name;
 	}
-	
-	/**
-	 * Private function that processes stdClass data into a WistiaProject object.
-	 * 
-	 * @param stdClass $data
-	 */
-	private function _loadData($data) {
-		foreach($data as $key => $value) {
-			if(property_exists("WistiaMedia", $key)) {
-				$this->$key = $value;
-			}
-		}
-	}
+  
+  public function getStats($start_date=null, $end_date=null) {
+    $response = $this->call("medias/".$this->hashed_id.".json");
+    
+    $stats = new Stats($response);
+    
+    return $stats;
+  }
 }

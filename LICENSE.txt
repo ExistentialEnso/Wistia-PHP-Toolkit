@@ -1,3 +1,13 @@
+The following entities are free to use the library as-is for whatever purpose:
+Thorne Melcher
+Portdusk Inc.
+Late Fringe LLC
+Sylvane Inc.
+
+Anyone else must adhere to the terms of the LGPL v3, attached below.
+
+-----
+
                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 

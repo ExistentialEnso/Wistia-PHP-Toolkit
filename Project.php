@@ -11,14 +11,17 @@
 * @copyright Copyright 2012, Thorne N. Melcher
 * @license LGPL v3 (see LICENSE.txt)
 * @package Wistia-API-Toolkit
+* @version 2.0-b1
 */
 
+namespace wistia;
+
 /**
- * WistiaProject class definition.
+ * Project class definition.
  *
  * @package Wistia
  */
-class WistiaProject {
+class Project extends APIEntity {
 	/**
 	 * The public ID of this project -- its primary unique identifier.
 	 * 
@@ -71,22 +74,20 @@ class WistiaProject {
 	/**
 	 * The API object used for communicating with the Wistia API.
 	 * 
-	 * @var WistiaAccount
+	 * @var Account
 	 */
 	protected $account;
 	
 	/**
 	* Can pass a stdObject or array of data, and it will traverse it attempting to parse it into Wistia objects.
 	*
-	* @param WistiaAccount $account
+	* @param Account $account
 	* @param stdClass $data
 	*/
 	public function __construct($account, $data=null) {
-		$this->api = $account;
+		$this->account = $account;
 	
-		if($data != null) {
-			$this->_loadData($data);
-		}
+		parent::__construct($data);
 	}
 	
 	/**
@@ -106,6 +107,13 @@ class WistiaProject {
 	public function anonymousCanDownload() {
 		return (boolean) $this->anonymousCanDownload;
 	}
+  
+  /**
+  * Deletes the project from Wistia. Use with caution!
+  */
+  public function delete() {
+    return $this->account->call("projects/".$this->publicId.".json", "DELETE");
+  }
 	
 	/**
 	 * Gets the number of media files associated with this project.
@@ -122,8 +130,8 @@ class WistiaProject {
 	 * @return array The objects.
 	 */
 	public function getMedias() {
-		if(count($this->medias) != $this->mediaCount) { //happens if Project comes from WistiaAccount->getProjects();
-			$response = $this->api->call('projects/'.$this->publicId.'.json');
+		if(count($this->medias) != $this->mediaCount) { //happens if Project comes from Account->getProjects();
+			$response = $this->account->call('projects/'.$this->publicId.'.json');
 			
 			$this->_loadData($response);
 		}
@@ -180,14 +188,14 @@ class WistiaProject {
 	
 	/**
 	* Saves changes to the project to Wistia's website. WARNING: This currently only supports saving updates 
-	* to existing projects. Use WistiaAccount->createProject() to create new projects.
+	* to existing projects. Use Account->createProject() to create new projects.
 	*
 	* @return stdClass The API response.
 	*/
 	public function save() {
 		if($this->publicId != null) {
 			$params = array("public"=>((int)$this->public), "anonymousCanUpload"=>((int)$this->anonymousCanUpload), "anonymousCanDownload"=>((int)$this->anonymousCanDownload), "name"=>$this->name);
-			$response = $this->api->call('projects/'.$this->publicId.'.json', "PUT", $params);
+			$response = $this->account->call('projects/'.$this->publicId.'.json', "PUT", $params);
 			
 			return $response;
 		}
@@ -229,22 +237,31 @@ class WistiaProject {
 	public function setPublic($public) {
 		$this->public = $public;
 	}
+  
+  public function getStats($start_date=null, $end_date=null) {
+    $response = $this->call("projects/".$this->projectId.".json");
+    
+    $stats = new Stats($response);
+    
+    return $stats;
+  }
 	
 	/**
-	 * Private function that processes stdClass data into a WistiaProject object.
+	 * Private function that processes stdClass data into a Project object. Overrides APIEntity's version
+   * so it can do nested hydration of Media's fields.
 	 * 
 	 * @param stdClass $data
 	 */
-	private function _loadData($data) {
+	protected function _loadData($data) {
 		foreach($data as $key => $value) {
 			if($key == "medias") {
 				//"medias" field is itself an array of media file-related information
 				foreach($value as $o) {
-					$m = new WistiaMedia($this->api, $o);
+					$m = new Media($this->account, $o);
 		
 					array_push($this->medias, $m);
 				}
-			} else if(property_exists("WistiaProject", $key)) {
+			} else if(property_exists("\wistia\Project", $key)) {
 				$this->$key = $value;
 			}
 		}
