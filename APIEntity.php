@@ -14,6 +14,11 @@
 namespace wistia;
 
 class APIEntity {
+  /**
+  * Constructor that children may pass the $data object to in order to have it processed.
+  *
+  * @param stdObj $data The data.
+  */
   public function __construct($data=null) {
     if($data != null) {
       $this->_loadData($data);
@@ -23,6 +28,8 @@ class APIEntity {
   /**
   * Generic data loading function. Account's call() method converts the API's JSON response into a PHP stdObject. This 
   * can then process that into fields on the "real" version of the entitys' class.
+  *
+  * @param stdObj $data The data.
   */
   protected function _loadData($data) {
     foreach($data as $key => $value) {

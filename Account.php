@@ -191,6 +191,10 @@ class Account extends APIEntity {
     return $media;
   }
   
+  public function getMedias() {
+  
+  }
+  
   public function getStats() {
     $response = $this->call("stats/account.json");
     
@@ -204,9 +208,24 @@ class Account extends APIEntity {
     $date = date("Y-m-d", $date); //create a properly-formatted date for the API call
   
     $response = $this->call("stats/account/by_date.json", "GET", array("start_date"=>$date, "end_date"=>$date));
-    //$response = $this->call("stats/account/by_date.json?start_date=" . $date . "&end_date=" . $date);
     
     $stats = new DailyStats($response[0]);
+    
+    return $stats;
+  }
+  
+  public function getMonthlyStats($month, $year) {
+    $lastDay = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+  
+    $response = $this->call("stats/account/by_date.json", "GET", array("start_date"=>$year."-".$month."-01", "end_date"=>$year."-".$month."-".$lastDay));
+  
+    $stats = new MonthlyStats();
+    $stats->setMonth($month);
+    $stats->setYear($year);
+    
+    foreach($response as $r) {
+      $stats->addDay(new DailyStats($r));
+    }
     
     return $stats;
   }

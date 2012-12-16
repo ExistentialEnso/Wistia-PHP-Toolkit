@@ -26,14 +26,20 @@ class Stats extends APIEntity {
   
   protected $hours_watched;
   
-  public function __construct($data) {
+  public function __construct($data=null) {
     parent::__construct($data);
   }
   
+  /**
+  * Gets the number of times this entity has been loaded.
+  */
   public function getLoadCount() {
     return $this->load_count;
   }
   
+  /**
+  * Sets the number of times this entity has been loaded.
+  */
   public function setLoadCount($load_count) {
     $this->load_count = $load_count;
   }
