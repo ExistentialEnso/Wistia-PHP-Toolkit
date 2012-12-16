@@ -103,7 +103,7 @@ class Account extends APIEntity {
   * Creates a WistiaProject with a given name and saves it to your Wistia account.
   *
   * @param string $name The project's name.
-  * @return WistiaProject The newly created project.
+  * @return wistia\Project The newly created project.
   */
   public function createProject($name) {
     $params = array("name"=>$name);
@@ -145,7 +145,7 @@ class Account extends APIEntity {
    * Fetches a WistiaProject populated with information from the API.
    * 
    * @param string $publicid The publicId (different from the regular id) of the project.
-   * @return WistiaProject The requested project.
+   * @return wistia\Project The requested project.
    */
   public function getProject($publicid) {
     $response = $this->call("projects/".$publicid.".json");
@@ -158,7 +158,7 @@ class Account extends APIEntity {
   /**
    * Gets all of the projects associated with this API account.
    * 
-   * @return array Array of WistiaProject objects.
+   * @return array<wistia\Project> Array of project objects.
    */
   public function getProjects($recursive=false) {
     $response = $this->call("projects.json");
@@ -181,7 +181,7 @@ class Account extends APIEntity {
    * Gets a WistiaMedia object created from API data based on an ID value.
    * 
    * @param string $id The ID of the media.
-   * @return WistiaMedia The created object.
+   * @return wistia\Media The created object.
    */
   public function getMedia($id) {
     $response = $this->call("medias/".$id.".json");
@@ -208,7 +208,7 @@ class Account extends APIEntity {
    * Gets the stats for one day for this account. Can be DateTime object, string, or UNIX timestamp int.
    * 
    * @param DateTime/string/int $date
-   * @return DailyStats The stats in objective form.
+   * @return \wistia\DailyStats The stats in objective form.
    */
   public function getDailyStats($date) {
     if(is_object($date)) $date = $date->format("Y-m-d"); //if a DateTime object is provided
