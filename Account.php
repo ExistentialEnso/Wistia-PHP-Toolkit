@@ -191,8 +191,21 @@ class Account extends APIEntity {
     return $media;
   }
   
+  /**
+  * Gets all of the Media objects associated with this account.
+  */
   public function getMedias() {
-  
+    $response = $this->call("medias.json");
+    $nedias = array();
+    
+    // Turn each block of data into a Media item for our array
+    foreach($response as $obj) {
+      $m = new Media($this, $obj);
+      
+      array_push($medias, $m);
+    }
+    
+    return $medias;
   }
 
   /**
