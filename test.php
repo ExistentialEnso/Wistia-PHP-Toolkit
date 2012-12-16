@@ -36,6 +36,9 @@ echo("<hr />");
 echo("DailyStats object for today for your account:");
 var_dump($a->getDailyStats(time()));
 echo("<hr />");
+echo("MonthlyStats object for this month for your account:");
+var_dump($a->getMonthlyStats(date("m"), date("Y")));
+echo("<hr />");
 echo("Array of Project objects associated with your account:");
 
 // Optional parameter lets you force recursive loading, which hydates the children Media objects' fields.
