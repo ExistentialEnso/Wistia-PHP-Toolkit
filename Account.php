@@ -196,7 +196,7 @@ class Account extends APIEntity {
   */
   public function getMedias() {
     $response = $this->call("medias.json");
-    $nedias = array();
+    $medias = array();
     
     // Turn each block of data into a Media item for our array
     foreach($response as $obj) {
