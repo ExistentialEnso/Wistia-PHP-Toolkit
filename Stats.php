@@ -16,14 +16,22 @@ namespace wistia;
 
 class Stats extends APIEntity {
   /**
-  * The number of times a page with the video embedded was loaded.
+  * The number of times a page with video embed was loaded.
   *
   * @var integer
   */
   protected $load_count;
   
+  /**
+   * The number of video plays.
+   * 
+   * @var integer
+   */
   protected $play_count;
   
+  /**
+   * The number of hours visitors spent video-watching.
+   */
   protected $hours_watched;
   
   public function __construct($data) {
@@ -38,18 +46,38 @@ class Stats extends APIEntity {
     $this->load_count = $load_count;
   }
   
+  /**
+   * Gets the number of video plays.
+   * 
+   * @return integer Play count.
+   */
   public function getPlayCount() {
     return $this->play_count;
   }
   
+  /**
+   * Sets the number of video plays.
+   * 
+   * @param $play_count integer
+   */
   public function setPlayCount($play_count) {
     $this->play_count = $play_count;
   }
   
+  /**
+   * Gets the number of hours visitors spent video-watching.
+   * 
+   * @return float Number of hours.
+   */
   public function getHoursWatched() {
     return $this->hours_watched;
   }
   
+  /**
+   * Sets the number of hours visitors spent video-watching.
+   * 
+   * @param float $hours_watched
+   */
   public function setHoursWatched($hours_watched) {
     $this->hours_watched = $hours_watched;
   }
