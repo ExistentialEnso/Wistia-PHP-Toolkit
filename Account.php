@@ -191,6 +191,11 @@ class Account extends APIEntity {
     return $media;
   }
   
+  /**
+   * Gets the all-time stats for this account.
+   * 
+   * @return Stats The stats in objective form.
+   */
   public function getStats() {
     $response = $this->call("stats/account.json");
     
@@ -199,7 +204,14 @@ class Account extends APIEntity {
     return $stats;
   }
   
+  /**
+   * Gets the stats for one day for this account. Can be DateTime object, string, or UNIX timestamp int.
+   * 
+   * @param DateTime/string/int $date
+   * @return DailyStats The stats in objective form.
+   */
   public function getDailyStats($date) {
+    if(is_object($date)) $date = $date->format("Y-m-d"); //if a DateTime object is provided
     if($date != intval($date)) strtotime($date); //convert to timestamp if necessary
     $date = date("Y-m-d", $date); //create a properly-formatted date for the API call
   
