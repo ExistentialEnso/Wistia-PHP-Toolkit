@@ -9,5 +9,5 @@ no means complete, but it helps make it near-effortless to create and manage pro
 Wistia in any way, and it is provided as-is with no warranty.
 
 A Wistia account with data API access (usually limited to non-free accounts) is required to use this library. The key/password provided in your account settings 
-page must be passed to the WistiaAPI object in order to enable access. For more information about how this API works, check out Wistia's own documentation files 
+page must be passed to the Account object in order to enable access. For more information about how this API works, check out Wistia's own documentation files 
 (http://wistia.com/doc/wistia_api.html).
