@@ -6,13 +6,14 @@
 * parameter "api", e.g. /test.php?api=<password>.
 * 
 * @author Thorne N. Melcher <tmelcher@portdusk.com>
-* @copyright Copyright 2012, Thorne N. Melcher
+* @copyright 2012-2013, Thorne N. Melcher
 * @license LGPL v3 (see LICENSE.txt)
 * @package Wistia-API-Toolkit
 * @version 2.0-b1
 */
 
-// Defines the full namespace path for Account (which will itself load Media, Project, and APIEntity automatically)
+// Defines the full namespace path for the Account class we use. If you don't instantiate the other classes directly, this is
+// all that is needed, since the others will be autoloaded by Account itself.
 use \wistia\Account;
 
 // Create a custom autoload function to load in the additional Class files as required.
@@ -23,7 +24,7 @@ function wistia_autoload($class_name) {
 }
 
 // Register the autoloader. Using the function spl_autoload_register will add to any current autoloading function
-// already in use. This prevents a conflict with the use of composer.
+// already in use, preventing conflicts with any pre-existing autoload functions.
 spl_autoload_register('wistia_autoload');
 
 // Creates an Account object from our API key passed as a GET parameter.
