@@ -15,13 +15,16 @@
 // Defines the full namespace path for Account (which will itself load Media, Project, and APIEntity automatically)
 use \wistia\Account;
 
-// Creating a function named __autoload in PHP lets you define "smart" class includes. This one is fairly basic, but this
-// can always be done manually if necessary.
-function __autoload($class_name) {
+// Create a custom autoload function to load in the additional Class files as required.
+function wistia_autoload($class_name) {
     $pieces = explode("\\", $class_name);
     $class_name = $pieces[count($pieces)-1];
     include_once $class_name . '.php';
 }
+
+// Register the autoloader. Using the function spl_autoload_register will add to any current autoloading function
+// already in use. This prevents a conflict with the use of composer.
+spl_autoload_register('wistia_autoload');
 
 // Creates an Account object from our API key passed as a GET parameter.
 $a = new Account($_GET['api']);
