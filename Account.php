@@ -6,7 +6,8 @@
 * Some functions return objects of other types in this library (such as WistiaProject objects or WistiaMedia objects).
 *
 * @author Thorne N. Melcher <tmelcher@portdusk.com>
-* @copyright Copyright 2012, Thorne N. Melcher
+* @author Ben Hutton <@relequestual>
+* @copyright Copyright 2013, Thorne N. Melcher / Ben Hutton
 * @license LGPL v3 (see LICENSE.txt)
 * @package Wistia-API-Toolkit
 * @version 2.0-b1
@@ -87,9 +88,12 @@ class Account extends APIEntity {
 
     // Add params (if necessary)
     if($params != null) {
-      // POST requests go in the POSTFIELDS field, otherwise just add a query string to our URL.
-      if($method == "POST") curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($params));
-      else $url . "?" . http_build_query($params);
+      // POST, PUT or DELETE requests go in the POSTFIELDS field, otherwise just add a query string to our URL.
+      if(in_array($method, array('POST', 'PUT', 'DELETE'))){
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($params));
+      }else{
+        $url = $url . "?" . http_build_query($params);
+      }
     }
 
     curl_setopt($curl, CURLOPT_URL, $url);
